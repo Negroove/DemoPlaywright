@@ -1,6 +1,5 @@
 ﻿using Microsoft.Playwright.NUnit;
-using Microsoft.Playwright;
-
+using DemoPlaywright.Pages;
 
 namespace DemoPlaywright.Tests.Frontend;
 
@@ -9,18 +8,17 @@ namespace DemoPlaywright.Tests.Frontend;
 public class Tests : PageTest
 {
     [Test]
-    public async Task MyTest()
+    public async Task ValidateSearchResultsContent()
     {
-        await Page.GetByPlaceholder("Search").ClickAsync();
-        await Page.GetByPlaceholder("Search").FillAsync("iphone");
-        await Page.GetByRole(AriaRole.Button, new() { Name = "" }).ClickAsync();
-        await Page.GetByText("iPhone", new() { Exact = true }).ClickAsync();
-    }
+        var homePage = new HomePage(Page);
+        await homePage.navigateAsync();
+        await homePage.searchProductAsync("iPhone");
 
-    [SetUp]
-    public async Task OpenBrowser()
-    {
-        await Page.GotoAsync("https://opencart.abstracta.us/");
+        var searchResultsPage = new SearchResultsPage(Page);
+        Assert.IsTrue(await searchResultsPage.AreResultsVisibleAsync(), "Los resultados no son visibles.");
+        var productTitles = await searchResultsPage.GetAllProductTitlesAsync();
 
+        Assert.IsTrue(productTitles.All(title => title.Contains("iPhone", StringComparison.OrdinalIgnoreCase)),
+                      "Algunos títulos no contienen la palabra 'iPhone'.");
     }
 }

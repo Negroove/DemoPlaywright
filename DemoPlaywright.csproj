@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <Folder Include="Reports\" />
-    <Folder Include="Pages\" />
     <Folder Include="Tests\Backend\" />
   </ItemGroup>
 
